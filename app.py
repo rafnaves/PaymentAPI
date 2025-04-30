@@ -66,26 +66,37 @@ def pix_confirmation():
 
     payment.paid = True
     db.session.commit()
-
+    socketio.emit(f"payment-confirmed-{payment.id}")
     return jsonify({"message": "Payment confirmed"})
-
 
 @app.route('/payments/pix/<int:payment_id>', methods=['GET'])
 def payment_pix_page(payment_id):
     payment = Payment.query.get(payment_id)
 
+    # Primeiro verifica se não encontrou
+    if not payment:
+        return render_template('404.html'), 404
+
+    # Só acessa atributos se existir
+    if payment.paid:
+         return render_template('confirmed_payment.html',
+                                payment_id=payment.id,
+                                value=payment.value) 
 
     return render_template('payment.html', 
                            payment_id=payment.id, 
                            value=payment.value, 
                            host="http://127.0.0.1:5000",
-                           qr_code= payment.qr_code)
+                           qr_code=payment.qr_code)
 
 # Web Sockets
 @socketio.on('connect')
 def handle_connect():
     print("Cliente Conectado ao server")
 
+@socketio.on('diconnect')
+def handle_disconnect():
+    print("Client has diconnected")
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

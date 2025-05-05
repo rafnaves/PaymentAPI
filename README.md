@@ -91,9 +91,3 @@ pytest -v
 ```
 
 ---
-
-Projeto criado para fins educacionais e demonstração de integração entre Flask, WebSocket e pagamentos simulados via PIX.
-
-```
-
----

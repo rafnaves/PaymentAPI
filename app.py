@@ -60,14 +60,18 @@ def pix_confirmation():
     if not payment or payment.paid:
         return jsonify({"message": "Payment not found"}), 404
 
-
     if data.get("value") != payment.value:
         return jsonify({"message": "Invalid payment data"}), 400
 
     payment.paid = True
     db.session.commit()
+
+    socketio.emit('admin-update', f"Pagamento {payment.id} confirmado no valor de R$ {payment.value}")
+    
     socketio.emit(f"payment-confirmed-{payment.id}")
+    
     return jsonify({"message": "Payment confirmed"})
+
 
 @app.route('/payments/pix/<int:payment_id>', methods=['GET'])
 def payment_pix_page(payment_id):
@@ -101,6 +105,17 @@ def handle_connect():
 @socketio.on('diconnect')
 def handle_disconnect():
     print("Client has diconnected")
+
+@socketio.on('message')
+def handle_message(msg):
+    print('Mensagem recebida:', msg)
+    socketio.send(msg)  # envia de volta para todos conectados
+
+@socketio.on('admin-message')
+def handle_admin_message(msg):
+    print("Mensagem recebida no painel admin:", msg)
+    socketio.emit('admin-update', msg)
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)

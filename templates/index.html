@@ -1,33 +1,41 @@
-<html>
 <!DOCTYPE html>
-   <html lang="en">
-   <head>
-       <meta charset="UTF-8">
-       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <title>Chat em Tempo Real</title>
-   </head>
-   <body>
-       <ul id="messages"></ul>
-       <form id="form" action="">
-           <input id="input" autocomplete="off" /><button>Enviar</button>
-       </form>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Admin - Pagamentos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-dark text-white">
+    <div class="container py-5">
+        <h1 class="text-center mb-4">Painel Admin - Pix</h1>
 
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
-       <script>
-           var socket = io.connect('http://' + document.domain + ':' + location.port);
+        <ul id="messages" class="list-group mb-4"></ul>
 
-           socket.on('message', function(msg) {
-               var ul = document.getElementById('messages');
-               var li = document.createElement('li');
-               li.appendChild(document.createTextNode(msg));
-               ul.appendChild(li);
-           });
+        <form id="form" class="d-flex gap-2">
+            <input id="input" class="form-control" placeholder="Mensagem para log interno..." autocomplete="off">
+            <button class="btn btn-primary">Enviar</button>
+        </form>
+    </div>
 
-           document.getElementById('form').onsubmit = function() {
-               socket.emit('message', document.getElementById('input').value);
-               document.getElementById('input').value = '';
-               return false;
-           };
-       </script>
-   </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        socket.on('admin-update', function(msg) {
+            const ul = document.getElementById('messages');
+            const li = document.createElement('li');
+            li.classList.add('list-group-item', 'bg-secondary', 'text-white');
+            li.textContent = msg;
+            ul.appendChild(li);
+        });
+
+        document.getElementById('form').onsubmit = function(e) {
+            e.preventDefault();
+            const input = document.getElementById('input');
+            socket.emit('admin-message', input.value);
+            input.value = '';
+        };
+    </script>
+</body>
 </html>

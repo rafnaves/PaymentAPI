@@ -22,3 +22,4 @@ class Pix:
             "bank_payment_id": str(bank_payment_id),
             "qr_code_path": f"static/img/qr_code_{bank_payment_id}.png"
         }
+

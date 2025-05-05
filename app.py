@@ -89,6 +89,10 @@ def payment_pix_page(payment_id):
                            host="http://127.0.0.1:5000",
                            qr_code=payment.qr_code)
 
+@app.route('/index', methods=['GET'])
+def index():
+    return render_template('index.html')
+
 # Web Sockets
 @socketio.on('connect')
 def handle_connect():
